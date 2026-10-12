@@ -1,0 +1,193 @@
+class Node
+{
+    public int Data;
+    public Node Next;
+    public Node(int data)
+    {
+        Data = data;
+        Next = null;
+    }
+}
+
+class CircularLinkedList
+{
+    public Node Head;
+
+    public void InsertAtBeginning(int value)
+    {
+        Node newNode = new Node(value);
+        if (Head == null)
+        {
+            Head = newNode;
+            newNode.Next = Head;          // khud ko point karta hai
+            return;
+        }
+        Node last = Head;
+        while (last.Next != Head)         // last node dhoondo
+            last = last.Next;
+
+        newNode.Next = Head;
+        last.Next = newNode;              // circle barqarar
+        Head = newNode;
+    }
+
+    public void InsertAtEnd(int value)
+    {
+        Node newNode = new Node(value);
+        if (Head == null)
+        {
+            Head = newNode;
+            newNode.Next = Head;
+            return;
+        }
+        Node last = Head;
+        while (last.Next != Head)
+            last = last.Next;
+
+        last.Next = newNode;
+        newNode.Next = Head;
+    }
+
+    public void InsertAtPosition(int position, int value)
+    {
+        if (position == 0)
+        {
+            InsertAtBeginning(value);
+            return;
+        }
+        if (Head == null) return;
+
+        Node Current = Head;
+        for (int i = 0; i < position - 1; i++)
+        {
+            Current = Current.Next;
+            if (Current == Head) return;  // ghoom kar wapas aa gaye = invalid position
+        }
+        Node newNode = new Node(value);
+        newNode.Next = Current.Next;
+        Current.Next = newNode;
+    }
+
+    public void DeleteAtBeginning()
+    {
+        if (Head == null) return;
+        if (Head.Next == Head)            // sirf 1 node
+        {
+            Head = null;
+            return;
+        }
+        Node last = Head;
+        while (last.Next != Head)
+            last = last.Next;
+
+        last.Next = Head.Next;            // last ab doosre node ko point kare
+        Head = Head.Next;
+    }
+
+    public void DeleteAtEnd()
+    {
+        if (Head == null) return;
+        if (Head.Next == Head)
+        {
+            Head = null;
+            return;
+        }
+        Node Current = Head;
+        while (Current.Next.Next != Head) // second-to-last par ruko
+            Current = Current.Next;
+
+        Current.Next = Head;
+    }
+
+    public void DeleteAtPosition(int position)
+    {
+        if (Head == null) return;
+        if (position == 0)
+        {
+            DeleteAtBeginning();
+            return;
+        }
+        Node Current = Head;
+        for (int i = 0; i < position - 1; i++)
+        {
+            Current = Current.Next;
+            if (Current == Head) return;  // invalid position
+        }
+        if (Current.Next == Head) return; // target Head ban jata = invalid
+
+        Current.Next = Current.Next.Next; // target ko skip kar do
+    }
+
+    public void Search(int value)
+    {
+        if (Head == null)
+        {
+            Console.WriteLine("List is empty.");
+            return;
+        }
+        Node Current = Head;
+        int position = 0;
+        do
+        {
+            if (Current.Data == value)
+            {
+                Console.WriteLine($"Value {value} found at position {position}.");
+                return;
+            }
+            Current = Current.Next;
+            position++;
+        } while (Current != Head);        // Head par wapas aate hi ruk jao
+
+        Console.WriteLine($"Value {value} not found.");
+    }
+
+    public void Display()
+    {
+        if (Head == null)
+        {
+            Console.WriteLine("List is empty.");
+            return;
+        }
+        Node Current = Head;
+        do
+        {
+            Console.Write(Current.Data + " ");
+            Current = Current.Next;
+        } while (Current != Head);
+        Console.WriteLine();
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        CircularLinkedList list = new CircularLinkedList();
+
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(20);
+        list.InsertAtEnd(30);
+        list.InsertAtEnd(40);
+        list.Display();                  // 10 20 30 40
+
+        list.InsertAtBeginning(5);
+        list.Display();                  // 5 10 20 30 40
+
+        list.InsertAtPosition(3, 25);
+        list.Display();                  // 5 10 20 25 30 40
+
+        list.Search(30);                 // found at position 4
+        list.Search(99);                 // not found
+
+        list.DeleteAtBeginning();
+        list.Display();                  // 10 20 25 30 40
+
+        list.DeleteAtEnd();
+        list.Display();                  // 10 20 25 30
+
+        list.DeleteAtPosition(2);
+        list.Display();                  // 10 20 30
+
+        Console.ReadLine();
+    }
+}
